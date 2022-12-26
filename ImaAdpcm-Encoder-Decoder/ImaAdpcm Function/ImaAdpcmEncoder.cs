@@ -24,7 +24,7 @@ namespace ImaAdpcm_Tool
             int outputbuffer;       /* place to keep previous 4-bit value */
             bool bufferstep;        /* toggle between outputbuffer/output */
             int numSamples;         /* Number of Samples to encode*/
-            int remainingSamples;   /* Countdown remaining samples for the output buffer */
+            int magicID = 65;
 
             //Initialize variables
             ImaAdpcmState state = new ImaAdpcmState();
@@ -35,90 +35,101 @@ namespace ImaAdpcm_Tool
             valpred = state.valprev;
             index = state.index;
             step = stepsizeTable[index];
-            remainingSamples = 0;
 
             bufferstep = true;
+            
+            //Ensure that we have chunks of 56 samples
+            short[] inputBuffer = new short[pcmData.Length + 100];
+            Buffer.BlockCopy(pcmData, 0, inputBuffer, 0, numSamples * sizeof(short));
 
-            for (; numSamples > 0; numSamples--)
+            //Start encoding
+            while (inp < numSamples)
             {
-                if (--remainingSamples <= 0)
+                //Clamp ID
+                if (magicID > 90)
                 {
-                    remainingSamples = 56;
-                    outBuff.WriteByte((byte)(valpred & 0xFF));
-                    outBuff.WriteByte((byte)((valpred >> 8) & 0xFF));
-                    outBuff.WriteByte((byte)index);
-                    outBuff.WriteByte(0);
+                    magicID = 65;
                 }
 
-                val = pcmData[inp++];
+                //Write Header Data
+                outBuff.WriteByte((byte)(valpred & 0xFF));
+                outBuff.WriteByte((byte)((valpred >> 8) & 0xFF));
+                outBuff.WriteByte((byte)index);
+                outBuff.WriteByte((byte)magicID++);
 
-                /* Step 1 - compute difference with previous value */
-                diff = val - valpred;
-                sign = (diff < 0) ? 8 : 0;
-                if (sign != 0) diff = (-diff);
-
-                /* Step 2 - Divide and clamp */
-                /* Note:
-                ** This code *approximately* computes:
-                **    delta = diff*4/step;
-                **    vpdiff = (delta+0.5)*step/4;
-                ** but in shift step bits are dropped. The net result of this is
-                ** that even if you have fast mul/div hardware you cannot put it to
-                ** good use since the fixup would be too expensive.
-                */
-                delta = 0;
-                vpdiff = (step >> 3);
-
-                if (diff >= step)
+                //56 samples = 28 pairs of nibbles
+                for (int j = 0; j < 56; j++)
                 {
-                    delta = 4;
-                    diff -= step;
-                    vpdiff += step;
-                }
-                step >>= 1;
-                if (diff >= step)
-                {
-                    delta |= 2;
-                    diff -= step;
-                    vpdiff += step;
-                }
-                step >>= 1;
-                if (diff >= step)
-                {
-                    delta |= 1;
-                    vpdiff += step;
-                }
+                    val = inputBuffer[inp++];
 
-                /* Step 3 - Update previous value */
-                if (sign != 0)
-                    valpred -= vpdiff;
-                else
-                    valpred += vpdiff;
+                    /* Step 1 - compute difference with previous value */
+                    diff = val - valpred;
+                    sign = (diff < 0) ? 8 : 0;
+                    if (sign != 0) diff = (-diff);
 
-                /* Step 4 - Clamp previous value to 16 bits */
-                if (valpred > short.MaxValue)
-                    valpred = short.MaxValue;
-                else if (valpred < short.MinValue)
-                    valpred = short.MinValue;
+                    /* Step 2 - Divide and clamp */
+                    /* Note:
+                    ** This code *approximately* computes:
+                    **    delta = diff*4/step;
+                    **    vpdiff = (delta+0.5)*step/4;
+                    ** but in shift step bits are dropped. The net result of this is
+                    ** that even if you have fast mul/div hardware you cannot put it to
+                    ** good use since the fixup would be too expensive.
+                    */
+                    delta = 0;
+                    vpdiff = (step >> 3);
 
-                /* Step 5 - Assemble value, update index and step values */
-                delta |= sign;
+                    if (diff >= step)
+                    {
+                        delta = 4;
+                        diff -= step;
+                        vpdiff += step;
+                    }
+                    step >>= 1;
+                    if (diff >= step)
+                    {
+                        delta |= 2;
+                        diff -= step;
+                        vpdiff += step;
+                    }
+                    step >>= 1;
+                    if (diff >= step)
+                    {
+                        delta |= 1;
+                        vpdiff += step;
+                    }
 
-                index += indexTable[delta];
-                if (index < 0) index = 0;
-                if (index > 88) index = 88;
-                step = stepsizeTable[index];
+                    /* Step 3 - Update previous value */
+                    if (sign != 0)
+                        valpred -= vpdiff;
+                    else
+                        valpred += vpdiff;
 
-                /* Step 6 - Output value */
-                if (bufferstep)
-                {
-                    outputbuffer = (delta << 4) & 0xf0;
+                    /* Step 4 - Clamp previous value to 16 bits */
+                    if (valpred > short.MaxValue)
+                        valpred = short.MaxValue;
+                    else if (valpred < short.MinValue)
+                        valpred = short.MinValue;
+
+                    /* Step 5 - Assemble value, update index and step values */
+                    delta |= sign;
+
+                    index += indexTable[delta];
+                    if (index < 0) index = 0;
+                    if (index > 88) index = 88;
+                    step = stepsizeTable[index];
+
+                    /* Step 6 - Output value */
+                    if (bufferstep)
+                    {
+                        outputbuffer = (delta << 4) & 0xf0;
+                    }
+                    else
+                    {
+                        outBuff.WriteByte((byte)((delta & 0x0f) | outputbuffer));
+                    }
+                    bufferstep = !bufferstep;
                 }
-                else
-                {
-                    outBuff.WriteByte((byte)((delta & 0x0f) | outputbuffer));
-                }
-                bufferstep = !bufferstep;
             }
 
             /* Output last step, if needed */

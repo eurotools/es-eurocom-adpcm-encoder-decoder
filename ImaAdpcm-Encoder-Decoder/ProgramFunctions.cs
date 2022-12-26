@@ -43,7 +43,7 @@ namespace ImaAdpcm_Tool
         internal static void ExecuteDecoder(string inputFile, string outputFile, int sampleRate)
         {
             string fileExtension = Path.GetExtension(inputFile);
-            if (fileExtension.Equals(".wav", StringComparison.OrdinalIgnoreCase) || fileExtension.Equals(".ima", StringComparison.OrdinalIgnoreCase))
+            if (fileExtension.Equals(".wav", StringComparison.OrdinalIgnoreCase) || fileExtension.Equals(".ima", StringComparison.OrdinalIgnoreCase) || fileExtension.Equals(".raw", StringComparison.OrdinalIgnoreCase))
             {
                 byte[] imaData = File.ReadAllBytes(inputFile);
 
