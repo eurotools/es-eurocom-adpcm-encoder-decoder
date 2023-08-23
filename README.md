@@ -15,7 +15,7 @@ This tool is designed to work with the custom Eurocom IMA ADPCM format. When dec
 ## Download
 To start using the Eurocom IMA ADPCM Audio Tool, download the latest version from the link below:
 
-[[![GitHub All Releases](https://img.shields.io/github/v/release/eurotools/es-eurocom-adpcm-encoder-decoder?style=for-the-badge)](https://github.com/eurotools/es-eurocom-adpcm-encoder-decoder/releases/latest)
+[![GitHub All Releases](https://img.shields.io/github/v/release/eurotools/es-eurocom-adpcm-encoder-decoder?style=for-the-badge)](https://github.com/eurotools/es-eurocom-adpcm-encoder-decoder/releases/latest)
 
 ## Usage
 
