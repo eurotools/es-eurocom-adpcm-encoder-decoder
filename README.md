@@ -1,6 +1,6 @@
-[![License](https://img.shields.io/github/license/eurotools/ima-adpcm_encoder-decoder)](https://www.gnu.org/licenses/gpl-3.0.html)
-[![Issues](https://img.shields.io/github/issues/eurotools/ima-adpcm_encoder-decoder)](https://github.com/eurotools/ima-adpcm_encoder-decoder/issues)
-[![GitHub Release](https://img.shields.io/github/v/release/eurotools/ima-adpcm_encoder-decoder)](https://github.com/eurotools/ima-adpcm_encoder-decoder/releases/latest)
+[![License](https://img.shields.io/github/license/eurotools/es-eurocom-adpcm-encoder-decoder)](https://www.gnu.org/licenses/gpl-3.0.html)
+[![Issues](https://img.shields.io/github/issues/eurotools/es-eurocom-adpcm-encoder-decoder)](https://github.com/eurotools/es-eurocom-adpcm-encoder-decoder/issues)
+[![GitHub Release](https://img.shields.io/github/v/release/eurotools/es-eurocom-adpcm-encoder-decoder)](https://github.com/eurotools/es-eurocom-adpcm-encoder-decoder/releases/latest)
 
 **Eurocom IMA ADPCM Audio Tool**, is a console-based utility developed for encoding and decoding audio files using the custom Eurocom IMA ADPCM format. This tool is specialized for mono audio files and is designed to handle 16-bit WAV files.
 
@@ -15,7 +15,7 @@ This tool is designed to work with the custom Eurocom IMA ADPCM format. When dec
 ## Download
 To start using the Eurocom IMA ADPCM Audio Tool, download the latest version from the link below:
 
-[[![GitHub All Releases](https://img.shields.io/github/v/release/eurotools/ima-adpcm_encoder-decoder?style=for-the-badge)](https://github.com/eurotools/ima-adpcm_encoder-decoder/releases/latest)
+[[![GitHub All Releases](https://img.shields.io/github/v/release/eurotools/es-eurocom-adpcm-encoder-decoder?style=for-the-badge)](https://github.com/eurotools/es-eurocom-adpcm-encoder-decoder/releases/latest)
 
 ## Usage
 
